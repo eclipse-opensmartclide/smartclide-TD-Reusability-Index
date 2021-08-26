@@ -2,7 +2,7 @@ package gr.zisis.reusabilityapi.controller.response.entity;
 
 import java.util.Objects;
 
-public class ProjectReusabilityIndex {
+public class ProjectReusabilityIndex implements Comparable<ProjectReusabilityIndex> {
     private String sha;
     private Long revisionCount;
     private Double index;
@@ -50,5 +50,15 @@ public class ProjectReusabilityIndex {
     @Override
     public int hashCode() {
         return Objects.hash(sha, revisionCount, index);
+    }
+
+    @Override
+    public int compareTo(ProjectReusabilityIndex o) {
+        if (this.revisionCount - o.revisionCount < 0)
+            return -1;
+        else if (this.revisionCount - o.revisionCount > 0)
+            return 1;
+        else
+            return 0;
     }
 }

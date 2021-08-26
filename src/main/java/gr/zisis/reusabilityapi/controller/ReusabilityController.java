@@ -28,4 +28,16 @@ public class ReusabilityController {
         return reusabilityService.findReusabilityIndexByCommitAndFile(url, sha, filePath);
     }
 
+    @CrossOrigin(origins = "*")
+    @GetMapping(value = "/projectReusabilityIndexByCommit")
+    Collection<ProjectReusabilityIndex> getProjectReusabilityIndexByCommit(@RequestParam(required = true) String url, @RequestParam(required = true) String sha) {
+        return reusabilityService.findProjectReusabilityIndexByCommit(url, sha);
+    }
+
+    @CrossOrigin(origins = "*")
+    @GetMapping(value = "/projectReusabilityIndexPerCommit")
+    Collection<ProjectReusabilityIndex> getProjectReusabilityIndexPerCommit(@RequestParam(required = true) String url, @RequestParam(required = false) Integer limit) {
+        return reusabilityService.findProjectReusabilityIndexPerCommit(url, limit);
+    }
+
 }
