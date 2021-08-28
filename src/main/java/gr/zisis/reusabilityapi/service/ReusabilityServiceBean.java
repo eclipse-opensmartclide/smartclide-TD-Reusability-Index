@@ -129,7 +129,7 @@ public class ReusabilityServiceBean implements ReusabilityService {
         HttpResponse<JsonNode> httpResponse = null;
         Unirest.setTimeouts(0, 0);
         try {
-            httpResponse = Unirest.get("http://195.251.210.147:3990/api/analyzedCommitIds?url=" + gitURL + "&limit=" + limit).asJson();
+            httpResponse = Unirest.get("http://195.251.210.147:3990/api/analyzedCommits?url=" + gitURL + "&limit=" + limit).asJson();
         } catch (UnirestException e) {
             e.printStackTrace();
         }
