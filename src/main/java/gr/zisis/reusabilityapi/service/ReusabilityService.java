@@ -5,7 +5,7 @@ import java.util.Collection;
 import gr.zisis.reusabilityapi.controller.response.entity.*;
 
 /**
- * @author George Digkas <digasgeo@gmail.com>
+ * @author Dimitrios Zisis <zisisndimitris@gmail.com>
  *
  */
 public interface ReusabilityService {
