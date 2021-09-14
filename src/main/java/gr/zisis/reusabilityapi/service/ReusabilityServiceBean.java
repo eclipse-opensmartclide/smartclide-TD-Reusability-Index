@@ -1,14 +1,10 @@
 package gr.zisis.reusabilityapi.service;
 
-import com.google.gson.Gson;
-import com.mashape.unirest.http.HttpResponse;
-import com.mashape.unirest.http.JsonNode;
-import com.mashape.unirest.http.Unirest;
-import com.mashape.unirest.http.exceptions.UnirestException;
 import gr.zisis.reusabilityapi.controller.response.entity.*;
 import gr.zisis.reusabilityapi.domain.AnalyzedCommits;
 import gr.zisis.reusabilityapi.domain.ReusabilityMetrics;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.*;
 
@@ -20,16 +16,27 @@ import static java.lang.Math.log10;
 @Service
 public class ReusabilityServiceBean implements ReusabilityService {
 
+    private final WebClient webClient;
+
+    public ReusabilityServiceBean() {
+        webClient = WebClient.create();
+    }
+
     @Override
     public Collection<FileReusabilityIndex> findReusabilityIndexByCommit(String url, String sha, Integer limit) {
-        HttpResponse<JsonNode> httpResponse;
-        Unirest.setTimeouts(0, 0);
+        WebClient.ResponseSpec responseSpec;
         try {
-            if (Objects.nonNull(limit))
-                httpResponse = Unirest.get("http://195.251.210.147:3990/api/reusabilityMetricsByCommit?url=" + url + "&sha=" + sha + "&limit=" + limit).asJson();
-            else
-                httpResponse = Unirest.get("http://195.251.210.147:3990/api/reusabilityMetricsByCommit?url=" + url + "&sha=" + sha).asJson();
-            List<ReusabilityMetrics> metrics = Arrays.asList(new Gson().fromJson(httpResponse.getBody().toString(), ReusabilityMetrics[].class));
+            if (Objects.nonNull(limit)) {
+                responseSpec = webClient.get()
+                        .uri("http://195.251.210.147:3990/api/reusabilityMetricsByCommit?url=" + url + "&sha=" + sha + "&limit=" + limit)
+                        .retrieve();
+            }
+            else {
+                responseSpec = webClient.get()
+                        .uri("http://195.251.210.147:3990/api/reusabilityMetricsByCommit?url=" + url + "&sha=" + sha)
+                        .retrieve();
+            }
+            List<ReusabilityMetrics> metrics = Arrays.asList(Objects.requireNonNull(responseSpec.bodyToMono(ReusabilityMetrics[].class).block()));
             if (metrics.isEmpty())
                 return new ArrayList<>();
             List<FileReusabilityIndex> fileReusabilityIndexList = new ArrayList<>();
@@ -39,7 +46,7 @@ public class ReusabilityServiceBean implements ReusabilityService {
             }
             Collections.sort(fileReusabilityIndexList);
             return fileReusabilityIndexList;
-        } catch (UnirestException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return new ArrayList<>();
@@ -47,11 +54,12 @@ public class ReusabilityServiceBean implements ReusabilityService {
 
     @Override
     public Collection<FileReusabilityIndex> findReusabilityIndexByCommitAndFile(String url, String sha, String filePath) {
-        HttpResponse<JsonNode> httpResponse;
-        Unirest.setTimeouts(0, 0);
+        WebClient.ResponseSpec responseSpec;
         try {
-            httpResponse = Unirest.get("http://195.251.210.147:3990/api/reusabilityMetricsByCommitAndFile?url=" + url + "&sha=" + sha + "&filePath=" + filePath).asJson();
-            List<ReusabilityMetrics> metrics = Arrays.asList(new Gson().fromJson(httpResponse.getBody().toString(), ReusabilityMetrics[].class));
+            responseSpec = webClient.get()
+                    .uri("http://195.251.210.147:3990/api/reusabilityMetricsByCommitAndFile?url=" + url + "&sha=" + sha + "&filePath=" + filePath)
+                    .retrieve();
+            List<ReusabilityMetrics> metrics = Arrays.asList(Objects.requireNonNull(responseSpec.bodyToMono(ReusabilityMetrics[].class).block()));
             if (metrics.isEmpty())
                 return new ArrayList<>();
             List<FileReusabilityIndex> fileReusabilityIndexList = new ArrayList<>();
@@ -60,7 +68,7 @@ public class ReusabilityServiceBean implements ReusabilityService {
                 fileReusabilityIndexList.add(new FileReusabilityIndex(m.getSha(), m.getRevisionCount(), filePath, index));
             }
             return fileReusabilityIndexList;
-        } catch (UnirestException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return new ArrayList<>();
@@ -68,11 +76,12 @@ public class ReusabilityServiceBean implements ReusabilityService {
 
     @Override
     public Collection<ProjectReusabilityIndex> findProjectReusabilityIndexByCommit(String url, String sha) {
-        HttpResponse<JsonNode> httpResponse;
-        Unirest.setTimeouts(0, 0);
+        WebClient.ResponseSpec responseSpec;
         try {
-            httpResponse = Unirest.get("http://195.251.210.147:3990/api/reusabilityMetricsByCommit?url=" + url + "&sha=" + sha).asJson();
-            List<ReusabilityMetrics> metrics = Arrays.asList(new Gson().fromJson(httpResponse.getBody().toString(), ReusabilityMetrics[].class));
+            responseSpec = webClient.get()
+                    .uri("http://195.251.210.147:3990/api/reusabilityMetricsByCommit?url=" + url + "&sha=" + sha)
+                    .retrieve();
+            List<ReusabilityMetrics> metrics = Arrays.asList(Objects.requireNonNull(responseSpec.bodyToMono(ReusabilityMetrics[].class).block()));
             if (metrics.isEmpty())
                 return new ArrayList<>();
             double avgIndex = 0.0;
@@ -82,7 +91,7 @@ public class ReusabilityServiceBean implements ReusabilityService {
             }
             avgIndex /= metrics.size();
             return Collections.singletonList(new ProjectReusabilityIndex(sha, metrics.get(0).getRevisionCount(), avgIndex));
-        } catch (UnirestException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return new ArrayList<>();
@@ -97,12 +106,13 @@ public class ReusabilityServiceBean implements ReusabilityService {
             commits = commits.subList(0, limit);
         Collections.reverse(commits);
         List<ProjectReusabilityIndex> projectReusabilityIndexList = new ArrayList<>();
+        WebClient.ResponseSpec responseSpec;
         for (AnalyzedCommits commit : commits) {
-            HttpResponse<JsonNode> httpResponse;
-            Unirest.setTimeouts(0, 0);
             try {
-                httpResponse = Unirest.get("http://195.251.210.147:3990/api/reusabilityMetricsByCommit?url=" + url + "&sha=" + commit.getSha()).asJson();
-                List<ReusabilityMetrics> metrics = Arrays.asList(new Gson().fromJson(httpResponse.getBody().toString(), ReusabilityMetrics[].class));
+                responseSpec = webClient.get()
+                        .uri("http://195.251.210.147:3990/api/reusabilityMetricsByCommit?url=" + url + "&sha=" + commit.getSha())
+                        .retrieve();
+                List<ReusabilityMetrics> metrics = Arrays.asList(Objects.requireNonNull(responseSpec.bodyToMono(ReusabilityMetrics[].class).block()));
                 if (metrics.isEmpty())
                     continue;
                 double avgIndex = 0.0;
@@ -112,7 +122,7 @@ public class ReusabilityServiceBean implements ReusabilityService {
                 }
                 avgIndex /= metrics.size();
                 projectReusabilityIndexList.add(new ProjectReusabilityIndex(commit.getSha(), metrics.get(0).getRevisionCount(), avgIndex));
-            } catch (UnirestException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
@@ -126,17 +136,22 @@ public class ReusabilityServiceBean implements ReusabilityService {
      * @param gitURL the url of git repository
      */
     private List<AnalyzedCommits> getCommitIds(String gitURL, Integer limit) {
-        HttpResponse<JsonNode> httpResponse = null;
-        Unirest.setTimeouts(0, 0);
+        WebClient.ResponseSpec responseSpec = null;
         try {
-            if (Objects.nonNull(limit))
-                httpResponse = Unirest.get("http://195.251.210.147:3990/api/analyzedCommits?url=" + gitURL + "&limit=" + limit).asJson();
-            else
-                httpResponse = Unirest.get("http://195.251.210.147:3990/api/analyzedCommits?url=" + gitURL).asJson();
-        } catch (UnirestException e) {
+            if (Objects.nonNull(limit)) {
+                responseSpec = webClient.get()
+                        .uri("http://195.251.210.147:3990/api/analyzedCommits?url=" + gitURL + "&limit=" + limit)
+                        .retrieve();
+            }
+            else {
+                responseSpec = webClient.get()
+                        .uri("http://195.251.210.147:3990/api/analyzedCommits?url=" + gitURL)
+                        .retrieve();
+            }
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        return Objects.nonNull(httpResponse) ? Arrays.asList(new Gson().fromJson(httpResponse.getBody().toString(), AnalyzedCommits[].class)) : null;
+        return Objects.nonNull(responseSpec) ? Arrays.asList(Objects.requireNonNull(responseSpec.bodyToMono(AnalyzedCommits[].class).block())) : null;
     }
 
 }
