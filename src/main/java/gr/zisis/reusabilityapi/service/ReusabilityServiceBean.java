@@ -1,11 +1,10 @@
 package gr.zisis.reusabilityapi.service;
 
 import gr.zisis.reusabilityapi.controller.response.entity.*;
-import gr.zisis.reusabilityapi.domain.AnalyzedCommits;
 import gr.zisis.reusabilityapi.domain.ReusabilityMetrics;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
-
 import java.util.*;
 
 import static java.lang.Math.log10;
@@ -16,11 +15,8 @@ import static java.lang.Math.log10;
 @Service
 public class ReusabilityServiceBean implements ReusabilityService {
 
-    private final WebClient webClient;
-
-    public ReusabilityServiceBean() {
-        webClient = WebClient.create();
-    }
+    @Autowired
+    private WebClient webClient;
 
     @Override
     public Collection<FileReusabilityIndex> findReusabilityIndexByCommit(String url, String sha, Integer limit) {
@@ -30,8 +26,7 @@ public class ReusabilityServiceBean implements ReusabilityService {
                 responseSpec = webClient.get()
                         .uri("http://195.251.210.147:3990/api/reusabilityMetricsByCommit?url=" + url + "&sha=" + sha + "&limit=" + limit)
                         .retrieve();
-            }
-            else {
+            } else {
                 responseSpec = webClient.get()
                         .uri("http://195.251.210.147:3990/api/reusabilityMetricsByCommit?url=" + url + "&sha=" + sha)
                         .retrieve();
@@ -99,59 +94,31 @@ public class ReusabilityServiceBean implements ReusabilityService {
 
     @Override
     public Collection<ProjectReusabilityIndex> findProjectReusabilityIndexPerCommit(String url, Integer limit) {
-        List<AnalyzedCommits> commits = getCommitIds(url, limit);
-        if (Objects.isNull(commits) || commits.isEmpty())
-            return new ArrayList<>();
-        if (Objects.nonNull(limit))
-            commits = commits.subList(0, limit);
-        Collections.reverse(commits);
         List<ProjectReusabilityIndex> projectReusabilityIndexList = new ArrayList<>();
         WebClient.ResponseSpec responseSpec;
-        for (AnalyzedCommits commit : commits) {
-            try {
+        try {
+            if (Objects.isNull(limit))
                 responseSpec = webClient.get()
-                        .uri("http://195.251.210.147:3990/api/reusabilityMetricsByCommit?url=" + url + "&sha=" + commit.getSha())
+                        .uri("http://195.251.210.147:3990/api/reusabilityMetrics?url=" + url)
                         .retrieve();
-                List<ReusabilityMetrics> metrics = Arrays.asList(Objects.requireNonNull(responseSpec.bodyToMono(ReusabilityMetrics[].class).block()));
-                if (metrics.isEmpty())
-                    continue;
-                double avgIndex = 0.0;
-                for (ReusabilityMetrics m : metrics) {
-                    double index = -1 * (8.753 * log10(m.getCbo().doubleValue() + 1) >= 0 ? log10(m.getCbo().doubleValue() + 1) : 0 + 2.505 * log10(m.getDit() + 1) >= 0 ? log10(m.getDit() + 1) : 0 - 1.922 * log10(m.getWmc().doubleValue() + 1) >= 0 ? log10(m.getWmc().doubleValue() + 1) : 0 + 0.892 * log10(m.getRfc().doubleValue() + 1) >= 0 ? log10(m.getRfc().doubleValue() + 1) : 0 - 0.399 * log10(m.getLcom().doubleValue() < 0 ? 0 : m.getLcom().doubleValue() + 1) >= 0 ? log10(m.getLcom().doubleValue() < 0 ? 0 : m.getLcom().doubleValue() + 1) : 0 - 1.080 * log10(m.getNocc() + 1) >= 0 ? log10(m.getNocc() + 1) : 0);
-                    avgIndex += index;
-                }
-                avgIndex /= metrics.size();
-                projectReusabilityIndexList.add(new ProjectReusabilityIndex(commit.getSha(), metrics.get(0).getRevisionCount(), avgIndex));
-            } catch (Exception e) {
-                e.printStackTrace();
+            else
+                responseSpec = webClient.get()
+                        .uri("http://195.251.210.147:3990/api/reusabilityMetrics?url=" + url + "&limit=" + limit)
+                        .retrieve();
+            List<ReusabilityMetrics> metrics = Arrays.asList(Objects.requireNonNull(responseSpec.bodyToMono(ReusabilityMetrics[].class).block()));
+            if (metrics.isEmpty())
+                return new ArrayList<>();
+            for (ReusabilityMetrics m : metrics) {
+                double avgIndex = -1 * (8.753 * log10(m.getCbo().doubleValue() + 1) >= 0 ? log10(m.getCbo().doubleValue() + 1) : 0 + 2.505 * log10(m.getDit() + 1) >= 0 ? log10(m.getDit() + 1) : 0 - 1.922 * log10(m.getWmc().doubleValue() + 1) >= 0 ? log10(m.getWmc().doubleValue() + 1) : 0 + 0.892 * log10(m.getRfc().doubleValue() + 1) >= 0 ? log10(m.getRfc().doubleValue() + 1) : 0 - 0.399 * log10(m.getLcom().doubleValue() < 0 ? 0 : m.getLcom().doubleValue() + 1) >= 0 ? log10(m.getLcom().doubleValue() < 0 ? 0 : m.getLcom().doubleValue() + 1) : 0 - 1.080 * log10(m.getNocc() + 1) >= 0 ? log10(m.getNocc() + 1) : 0);
+                projectReusabilityIndexList.add(new ProjectReusabilityIndex(m.getSha(), m.getRevisionCount(), avgIndex));
             }
+        } catch(Exception e)
+
+        {
+            e.printStackTrace();
         }
         Collections.sort(projectReusabilityIndexList);
         return projectReusabilityIndexList;
-    }
-
-    /**
-     * Gets all commit ids for a specific git repo.
-     *
-     * @param gitURL the url of git repository
-     */
-    private List<AnalyzedCommits> getCommitIds(String gitURL, Integer limit) {
-        WebClient.ResponseSpec responseSpec = null;
-        try {
-            if (Objects.nonNull(limit)) {
-                responseSpec = webClient.get()
-                        .uri("http://195.251.210.147:3990/api/analyzedCommits?url=" + gitURL + "&limit=" + limit)
-                        .retrieve();
-            }
-            else {
-                responseSpec = webClient.get()
-                        .uri("http://195.251.210.147:3990/api/analyzedCommits?url=" + gitURL)
-                        .retrieve();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return Objects.nonNull(responseSpec) ? Arrays.asList(Objects.requireNonNull(responseSpec.bodyToMono(AnalyzedCommits[].class).block())) : null;
     }
 
 }
