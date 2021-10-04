@@ -36,7 +36,7 @@ public class ReusabilityServiceBean implements ReusabilityService {
                 return new ArrayList<>();
             List<FileReusabilityIndex> fileReusabilityIndexList = new ArrayList<>();
             for (ReusabilityMetrics m : metrics) {
-                Double index = -1 * (8.753 * log10(m.getCbo().doubleValue() + 1) >= 0 ? log10(m.getCbo().doubleValue() + 1) : 0 + 2.505 * log10(m.getDit() + 1) >= 0 ? log10(m.getDit() + 1) : 0 - 1.922 * log10(m.getWmc().doubleValue() + 1) >= 0 ? log10(m.getWmc().doubleValue() + 1) : 0 + 0.892 * log10(m.getRfc().doubleValue() + 1) >= 0 ? log10(m.getRfc().doubleValue() + 1) : 0 - 0.399 * log10(m.getLcom().doubleValue() < 0 ? 0 : m.getLcom().doubleValue() + 1) >= 0 ? log10(m.getLcom().doubleValue() < 0 ? 0 : m.getLcom().doubleValue() + 1) : 0 - 1.080 * log10(m.getNocc() + 1) >= 0 ? log10(m.getNocc() + 1) : 0);
+                double index = -1 * (8.753 * log10(m.getCbo().doubleValue() + 1) + 2.505 * log10(m.getDit() + 1) - 1.922 * log10(m.getWmc().doubleValue() + 1) + 0.892 * log10(m.getRfc().doubleValue() + 1) - 0.399 * log10(m.getLcom().doubleValue() + 1) - 1.080 * log10(m.getNocc() + 1));
                 fileReusabilityIndexList.add(new FileReusabilityIndex(m.getSha(), m.getRevisionCount(), m.getFilePath(), index));
             }
             Collections.sort(fileReusabilityIndexList);
@@ -59,7 +59,7 @@ public class ReusabilityServiceBean implements ReusabilityService {
                 return new ArrayList<>();
             List<FileReusabilityIndex> fileReusabilityIndexList = new ArrayList<>();
             for (ReusabilityMetrics m : metrics) {
-                Double index = -1 * (8.753 * log10(m.getCbo().doubleValue() + 1) >= 0 ? log10(m.getCbo().doubleValue() + 1) : 0 + 2.505 * log10(m.getDit() + 1) >= 0 ? log10(m.getDit() + 1) : 0 - 1.922 * log10(m.getWmc().doubleValue() + 1) >= 0 ? log10(m.getWmc().doubleValue() + 1) : 0 + 0.892 * log10(m.getRfc().doubleValue() + 1) >= 0 ? log10(m.getRfc().doubleValue() + 1) : 0 - 0.399 * log10(m.getLcom().doubleValue() < 0 ? 0 : m.getLcom().doubleValue() + 1) >= 0 ? log10(m.getLcom().doubleValue() < 0 ? 0 : m.getLcom().doubleValue() + 1) : 0 - 1.080 * log10(m.getNocc() + 1) >= 0 ? log10(m.getNocc() + 1) : 0);
+                double index = -1 * (8.753 * log10(m.getCbo().doubleValue() + 1) + 2.505 * log10(m.getDit() + 1) - 1.922 * log10(m.getWmc().doubleValue() + 1) + 0.892 * log10(m.getRfc().doubleValue() + 1) - 0.399 * log10(m.getLcom().doubleValue() + 1) - 1.080 * log10(m.getNocc() + 1));
                 fileReusabilityIndexList.add(new FileReusabilityIndex(m.getSha(), m.getRevisionCount(), filePath, index));
             }
             return fileReusabilityIndexList;
@@ -81,7 +81,7 @@ public class ReusabilityServiceBean implements ReusabilityService {
                 return new ArrayList<>();
             double avgIndex = 0.0;
             for (ReusabilityMetrics m : metrics) {
-                double index = -1 * (8.753 * log10(m.getCbo().doubleValue() + 1) >= 0 ? log10(m.getCbo().doubleValue() + 1) : 0 + 2.505 * log10(m.getDit() + 1) >= 0 ? log10(m.getDit() + 1) : 0 - 1.922 * log10(m.getWmc().doubleValue() + 1) >= 0 ? log10(m.getWmc().doubleValue() + 1) : 0 + 0.892 * log10(m.getRfc().doubleValue() + 1) >= 0 ? log10(m.getRfc().doubleValue() + 1) : 0 - 0.399 * log10(m.getLcom().doubleValue() < 0 ? 0 : m.getLcom().doubleValue() + 1) >= 0 ? log10(m.getLcom().doubleValue() < 0 ? 0 : m.getLcom().doubleValue() + 1) : 0 - 1.080 * log10(m.getNocc() + 1) >= 0 ? log10(m.getNocc() + 1) : 0);
+                double index = -1 * (8.753 * log10(m.getCbo().doubleValue() + 1) + 2.505 * log10(m.getDit() + 1) - 1.922 * log10(m.getWmc().doubleValue() + 1) + 0.892 * log10(m.getRfc().doubleValue() + 1) - 0.399 * log10(m.getLcom().doubleValue() + 1) - 1.080 * log10(m.getNocc() + 1));
                 avgIndex += index;
             }
             avgIndex /= metrics.size();
@@ -109,7 +109,7 @@ public class ReusabilityServiceBean implements ReusabilityService {
             if (metrics.isEmpty())
                 return new ArrayList<>();
             for (ReusabilityMetrics m : metrics) {
-                double avgIndex = -1 * (8.753 * log10(m.getCbo().doubleValue() + 1) >= 0 ? log10(m.getCbo().doubleValue() + 1) : 0 + 2.505 * log10(m.getDit() + 1) >= 0 ? log10(m.getDit() + 1) : 0 - 1.922 * log10(m.getWmc().doubleValue() + 1) >= 0 ? log10(m.getWmc().doubleValue() + 1) : 0 + 0.892 * log10(m.getRfc().doubleValue() + 1) >= 0 ? log10(m.getRfc().doubleValue() + 1) : 0 - 0.399 * log10(m.getLcom().doubleValue() < 0 ? 0 : m.getLcom().doubleValue() + 1) >= 0 ? log10(m.getLcom().doubleValue() < 0 ? 0 : m.getLcom().doubleValue() + 1) : 0 - 1.080 * log10(m.getNocc() + 1) >= 0 ? log10(m.getNocc() + 1) : 0);
+                double avgIndex = -1 * (8.753 * log10(m.getCbo().doubleValue() + 1) + 2.505 * log10(m.getDit() + 1) - 1.922 * log10(m.getWmc().doubleValue() + 1) + 0.892 * log10(m.getRfc().doubleValue() + 1) - 0.399 * log10(m.getLcom().doubleValue() + 1) - 1.080 * log10(m.getNocc() + 1));
                 projectReusabilityIndexList.add(new ProjectReusabilityIndex(m.getSha(), m.getRevisionCount(), avgIndex));
             }
         } catch(Exception e)
