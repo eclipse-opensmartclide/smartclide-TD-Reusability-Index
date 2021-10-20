@@ -13,10 +13,6 @@ jobs:
   publish:
 
     runs-on: ubuntu-latest
-    
-    env:
-      CONTAINER_REGISTRY_USERNAME: ${GITHUB_ACTOR}
-      CONTAINER_REGISTRY_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     steps:
     - name: Checkout
