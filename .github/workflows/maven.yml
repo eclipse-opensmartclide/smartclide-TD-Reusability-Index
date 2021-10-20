@@ -46,4 +46,4 @@ jobs:
       with:
         context: .
         push: true
-        tags: ghcr.io/eclipse-researchlabs/smartclide/tdreusability-uom:latest
+        tags: ghcr.io/eclipse-researchlabs/smartclide/tdreusability:latest
