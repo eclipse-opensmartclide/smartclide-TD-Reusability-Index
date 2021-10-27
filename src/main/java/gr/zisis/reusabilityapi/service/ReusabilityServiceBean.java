@@ -3,7 +3,9 @@ package gr.zisis.reusabilityapi.service;
 import gr.zisis.reusabilityapi.controller.response.entity.*;
 import gr.zisis.reusabilityapi.domain.ReusabilityMetrics;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.reactive.function.client.WebClient;
 import java.util.*;
 
@@ -13,10 +15,14 @@ import static java.lang.Math.log10;
  * @author George Digkas <digasgeo@gmail.com>
  */
 @Service
+@RequestMapping("${my.property}")
 public class ReusabilityServiceBean implements ReusabilityService {
 
     @Autowired
     private WebClient webClient;
+
+    @Value("${interest-service.url}")
+    private String interestServiceURL;
 
     @Override
     public Collection<FileReusabilityIndex> findReusabilityIndexByCommit(String url, String sha, Integer limit) {
@@ -24,11 +30,11 @@ public class ReusabilityServiceBean implements ReusabilityService {
         try {
             if (Objects.nonNull(limit)) {
                 responseSpec = webClient.get()
-                        .uri("http://195.251.210.147:3990/api/reusabilityMetricsByCommit?url=" + url + "&sha=" + sha + "&limit=" + limit)
+                        .uri(interestServiceURL + "/api/reusabilityMetricsByCommit?url=" + url + "&sha=" + sha + "&limit=" + limit)
                         .retrieve();
             } else {
                 responseSpec = webClient.get()
-                        .uri("http://195.251.210.147:3990/api/reusabilityMetricsByCommit?url=" + url + "&sha=" + sha)
+                        .uri(interestServiceURL + "/api/reusabilityMetricsByCommit?url=" + url + "&sha=" + sha)
                         .retrieve();
             }
             List<ReusabilityMetrics> metrics = Arrays.asList(Objects.requireNonNull(responseSpec.bodyToMono(ReusabilityMetrics[].class).block()));
@@ -52,7 +58,7 @@ public class ReusabilityServiceBean implements ReusabilityService {
         WebClient.ResponseSpec responseSpec;
         try {
             responseSpec = webClient.get()
-                    .uri("http://195.251.210.147:3990/api/reusabilityMetricsByCommitAndFile?url=" + url + "&sha=" + sha + "&filePath=" + filePath)
+                    .uri( interestServiceURL + "/api/reusabilityMetricsByCommitAndFile?url=" + url + "&sha=" + sha + "&filePath=" + filePath)
                     .retrieve();
             List<ReusabilityMetrics> metrics = Arrays.asList(Objects.requireNonNull(responseSpec.bodyToMono(ReusabilityMetrics[].class).block()));
             if (metrics.isEmpty())
@@ -74,7 +80,7 @@ public class ReusabilityServiceBean implements ReusabilityService {
         WebClient.ResponseSpec responseSpec;
         try {
             responseSpec = webClient.get()
-                    .uri("http://195.251.210.147:3990/api/reusabilityMetricsByCommit?url=" + url + "&sha=" + sha)
+                    .uri(interestServiceURL + "/api/reusabilityMetricsByCommit?url=" + url + "&sha=" + sha)
                     .retrieve();
             List<ReusabilityMetrics> metrics = Arrays.asList(Objects.requireNonNull(responseSpec.bodyToMono(ReusabilityMetrics[].class).block()));
             if (metrics.isEmpty())
@@ -99,11 +105,11 @@ public class ReusabilityServiceBean implements ReusabilityService {
         try {
             if (Objects.isNull(limit))
                 responseSpec = webClient.get()
-                        .uri("http://195.251.210.147:3990/api/reusabilityMetrics?url=" + url)
+                        .uri(interestServiceURL + "/api/reusabilityMetrics?url=" + url)
                         .retrieve();
             else
                 responseSpec = webClient.get()
-                        .uri("http://195.251.210.147:3990/api/reusabilityMetrics?url=" + url + "&limit=" + limit)
+                        .uri(interestServiceURL + "/api/reusabilityMetrics?url=" + url + "&limit=" + limit)
                         .retrieve();
             List<ReusabilityMetrics> metrics = Arrays.asList(Objects.requireNonNull(responseSpec.bodyToMono(ReusabilityMetrics[].class).block()));
             if (metrics.isEmpty())
