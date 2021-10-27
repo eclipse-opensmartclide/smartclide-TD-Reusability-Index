@@ -10,12 +10,12 @@ Default port: 8080
 
 ### Mandatory Query Parameters
 
-1. url: String
-2. sha: String
+1. **url**: String
+2. **sha**: String
 
 ### Optional Query Parameters
 
-1. limit: Integer
+1. **limit**: Integer
 
 ### Example Request
 
@@ -46,8 +46,8 @@ Default port: 8080
 
 ### Mandatory Query Parameters
 
-1. url: String
-2. file: String
+1. **url**: String
+2. **filePath**: String
 
 ### Optional Query Parameters
 
@@ -94,11 +94,11 @@ Default port: 8080
 
 ### Mandatory Query Parameters
 
-1. url: String
+1. **url**: String
 
 ### Optional Query Parameters
 
-1. limit: Integer
+1. **limit**: Integer
 
 ### Example Request
 
