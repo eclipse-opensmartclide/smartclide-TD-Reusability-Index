@@ -18,7 +18,7 @@ port 8080 Requires the URL of the repository instance as an argument
 ### Example Request
 
 ```url
-http://localhost:8080/api/reusabilityIndexByCommit?url=https://github.com/apache/commons-io&sha=b10969081c7e9a8b8529167ccfb10e6be14e9a94&limit=2
+/api/reusabilityIndexByCommit?url=https://github.com/apache/commons-io&sha=b10969081c7e9a8b8529167ccfb10e6be14e9a94&limit=2
 ```
 
 ### Response
@@ -41,7 +41,7 @@ http://localhost:8080/api/reusabilityIndexByCommit?url=https://github.com/apache
 ### Example Request
 
 ```url
-http://localhost:8080/api/reusabilityIndexByCommitAndFile?url=https://github.com/apache/commons-io&sha=f5de47f2fda3bb8a3fd2daf06b431282f40e3fa8&filePath=src/main/java/org/apache/commons/io/file/DeleteOption.java
+/api/reusabilityIndexByCommitAndFile?url=https://github.com/apache/commons-io&sha=f5de47f2fda3bb8a3fd2daf06b431282f40e3fa8&filePath=src/main/java/org/apache/commons/io/file/DeleteOption.java
 ```
 
 ### Response
@@ -53,7 +53,7 @@ http://localhost:8080/api/reusabilityIndexByCommitAndFile?url=https://github.com
 ## (GET) Project's Reusability Index By Commit
 
 ```url
-http://localhost:8080/api/projectReusabilityIndexByCommit?url=https://github.com/apache/commons-io&sha=f5de47f2fda3bb8a3fd2daf06b431282f40e3fa8
+/api/projectReusabilityIndexByCommit?url=https://github.com/apache/commons-io&sha=f5de47f2fda3bb8a3fd2daf06b431282f40e3fa8
 ```
 
 ### Response
@@ -75,7 +75,7 @@ http://localhost:8080/api/projectReusabilityIndexByCommit?url=https://github.com
 ### Example Request
 
 ```url
-http://localhost:8080/api/projectReusabilityIndexPerCommit?url=https://github.com/apache/commons-io&limit=4
+/api/projectReusabilityIndexPerCommit?url=https://github.com/apache/commons-io&limit=4
 ```
 
 ### Response
