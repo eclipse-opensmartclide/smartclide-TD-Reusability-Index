@@ -1,0 +1,5 @@
+site_name: SmartCLIDE TD Reusability Index Backend Component
+repo_url: https://github.com/eclipse-researchlabs/smartclide-TD-Reusability-Index
+
+nav:
+  - TD Reusability Index Backend: 'index.md'
