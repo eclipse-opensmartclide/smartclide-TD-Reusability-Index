@@ -33,7 +33,7 @@ docker build -t smartclide-td-reusability-index-backend:latest .
 
 ## How to run TD Reusability Index
 
-All the images of this component can be found [here](https://github.com/eclipse-researchlabs/smartclide-TD-Reusability-Index/pkgs/container/smartclide%2Ftdreusability).
+All the images of this component can be found [here](https://github.com/eclipse-opensmartclide/smartclide-TD-Reusability-Index/pkgs/container/smartclide%2Ftdreusability).
 
 You can run the backend service with the following command:
 
@@ -43,6 +43,6 @@ docker run smartclide-td-reusability-index-backend:latest
 
 ### Extra dependencies of TD Reusability Index
 
-This backend has an external dependency with the [TD Interest](https://github.com/eclipse-researchlabs/smartclide-TD-Interest), in order to get the metrics of a specific project.
-This dependency is visible through the **[application.properties](https://github.com/eclipse-researchlabs/smartclide-TD-Reusability-Index/blob/main/src/main/resources/application.properties)** file, where there is the following variable:
+This backend has an external dependency with the [TD Interest](https://github.com/eclipse-opensmartclide/smartclide-TD-Interest), in order to get the metrics of a specific project.
+This dependency is visible through the **[application.properties](https://github.com/eclipse-opensmartclide/smartclide-TD-Reusability-Index/blob/main/src/main/resources/application.properties)** file, where there is the following variable:
 - interest-service.url
