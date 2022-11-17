@@ -8,7 +8,7 @@
 # SPDX-License-Identifier: EPL-2.0
 #*******************************************************************************
 
-FROM adoptopenjdk:11-jre-hotspot
+FROM adoptopenjdk:16-jre-hotspot
 VOLUME /tmp
 ADD target/reusability-api-0.0.1-SNAPSHOT.jar app.jar
 ENTRYPOINT ["java", "-jar", "/app.jar"]
